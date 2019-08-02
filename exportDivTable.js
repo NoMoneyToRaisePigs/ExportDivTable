@@ -73,4 +73,50 @@ function toExcel(tableId, rowClassName, columnClassName){
 	document.body.removeChild(download_link);
 }
 
-toExcel('xxx', 'row', 'column');
+//toExcel('xxx', 'row', 'column');
+
+// navigator.clipboard.writeText('Text to be copied')
+//   .then(() => {
+//     console.log('Text copied to clipboard');
+//   })
+//   .catch(err => {
+//     // This can happen if the user denies clipboard permissions:
+//     console.error('Could not copy text: ', err);
+//   });
+
+
+//   navigator.clipboard.readText()
+//   .then(text => {
+//     console.log('Pasted content: ', text);
+//   })
+//   .catch(err => {
+//     console.error('Failed to read clipboard contents: ', err);
+//   });
+
+  function showme(){
+	navigator.clipboard.read()
+	.then(text => {
+		console.log('Pasted content: ', text);
+	})
+	.catch(err => {
+		console.error('Failed to read clipboard contents: ', err);
+	});
+
+  }
+
+  function handlePaste (e) {
+    var clipboardData, pastedData;
+
+    // Stop data actually being pasted into div
+    e.stopPropagation();
+    e.preventDefault();
+
+    // Get pasted data via clipboard API
+    clipboardData = e.clipboardData || window.clipboardData;
+    pastedData = clipboardData.getData('Text');
+
+    // Do whatever with pasteddata
+    alert(pastedData);
+}
+
+document.getElementById('ta').addEventListener('paste', handlePaste);
