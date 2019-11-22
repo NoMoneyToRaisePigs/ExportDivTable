@@ -93,15 +93,43 @@ function toExcel(tableId, rowClassName, columnClassName){
 //     console.error('Failed to read clipboard contents: ', err);
 //   });
 
-  function showme(){
-	navigator.clipboard.read()
-	.then(text => {
-		console.log('Pasted content: ', text);
-	})
-	.catch(err => {
-		console.error('Failed to read clipboard contents: ', err);
-	});
+	var copyText;
 
+  function showme(){
+	// navigator.clipboard.readText('Text')
+	// .then(text => {
+	// 	copyText = text;
+	// 	console.log('Pasted content: ', text);
+	// })
+	// .catch(err => {
+	// 	console.error('Failed to read clipboard contents: ', err);
+	// });
+
+	// navigator.clipboard.read()
+	// .then(text => {
+	// 	console.log('Pasted Type: ', text);
+
+	// 	text[0].getType('text/plain').then(x =>{
+
+	// 		console.log(x);
+	// 	});
+	// })
+	// .catch(err => {
+	// 	console.error('Failed to read clipboard contents: ', err);
+	// });
+
+	document.getElementById('ta').select();
+
+	navigator.permissions.query({name: "clipboard-read"}).then(result => {
+		// If permission to read the clipboard is granted or if the user will
+		// be prompted to allow it, we proceed.
+	  
+		if (result.state == "granted" || result.state == "prompt") {
+		  navigator.clipboard.read().then(data => {
+			console.log(data);
+		  });
+		}
+	  });
   }
 
   function handlePaste (e) {
@@ -113,10 +141,48 @@ function toExcel(tableId, rowClassName, columnClassName){
 
     // Get pasted data via clipboard API
     clipboardData = e.clipboardData || window.clipboardData;
-    pastedData = clipboardData.getData('Text');
-
+	//pastedData = clipboardData.getData('Text');
+	pastedData = clipboardData.getData('text/html');
+	
+	console.log(pastedData);
     // Do whatever with pasteddata
     alert(pastedData);
 }
 
 document.getElementById('ta').addEventListener('paste', handlePaste);
+
+document.addEventListener('copy', function(e) {
+	// e.clipboardData is initially empty, but we can set it to the
+	// data that we want copied onto the clipboard as part of the cut.
+	// Write the data that we want copied onto the clipboard.
+	//e.clipboardData.setData('text/plain', 'Hello, world!');
+	//e.clipboardData.setData('text/html', '<b>Hello, world!</b>');
+  
+	// Since we will be canceling the cut operation, we need to manually
+	// update the document to remove the currently selected text.
+	//deleteCurrentDocumentSelection();
+	var x= e.clipboardData.getData('text/plain');
+	console.log(x);
+	// This is necessary to prevent the document selection from being
+	// written to the clipboard.
+	e.preventDefault();
+  });
+
+  function getSelectionHtml() {
+    var html = "";
+    if (typeof window.getSelection != "undefined") {
+        var sel = window.getSelection();
+        if (sel.rangeCount) {
+            var container = document.createElement("div");
+            for (var i = 0, len = sel.rangeCount; i < len; ++i) {
+                container.appendChild(sel.getRangeAt(i).cloneContents());
+            }
+            html = container.innerHTML;
+        }
+    } else if (typeof document.selection != "undefined") {
+        if (document.selection.type == "Text") {
+            html = document.selection.createRange().htmlText;
+        }
+    }
+    return html;
+}
